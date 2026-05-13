@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Armenian Folklore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C8993A;
+    --gold-light: #E8C46A;
+    --gold-dark: #8B6514;
+    --ink: #1A1208;
+    --parchment: #F5EDD8;
+    --parchment-dark: #E8D9B8;
+    --parchment-deep: #D4C299;
+    --red-deep: #7A1E1E;
+    --red-mid: #A33030;
+    --cream: #FBF5E6;
+    --shadow: rgba(26,18,8,0.18);
+  }
+
+  html, body {
+    min-height: 100%;
+    background: var(--ink);
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE TEXTURE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1000;
+    opacity: 0.5;
+  }
+
+  /* ─── SCREENS ─── */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; }
+
+  /* ═══════════════════════════════════════════
+     ENTRY SCREEN
+  ════════════════════════════════════════════ */
+  #entry-screen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--ink);
+    position: relative;
+    padding: 2rem;
+    overflow: hidden;
+  }
+
+  #entry-screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 60%, rgba(200,153,58,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 20% 20%, rgba(122,30,30,0.1) 0%, transparent 60%),
+      radial-gradient(ellipse 30% 40% at 80% 80%, rgba(122,30,30,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .entry-border {
+    position: absolute;
+    inset: 20px;
+    border: 1px solid rgba(200,153,58,0.2);
+    pointer-events: none;
+  }
+  .entry-border::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(200,153,58,0.1);
+  }
+
+  /* Corner ornaments */
+  .corner { position: absolute; width: 40px; height: 40px; }
+  .corner svg { width: 100%; height: 100%; }
+  .corner.tl { top: 14px; left: 14px; }
+  .corner.tr { top: 14px; right: 14px; transform: scaleX(-1); }
+  .corner.bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
+  .corner.br { bottom: 14px; right: 14px; transform: scale(-1,-1); }
+
+  .entry-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 540px;
+  }
+
+  .entry-eyebrow {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s ease forwards;
+  }
+
+  .entry-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(42px, 8vw, 72px);
+    font-weight: 600;
+    color: var(--parchment);
+    line-height: 1.05;
+    margin-bottom: 0.4rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s ease forwards;
+  }
+
+  .entry-title span {
+    color: var(--gold);
+    display: block;
+    font-weight: 400;
+    font-style: italic;
+  }
+
+  .entry-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 1.8rem auto;
+    width: 260px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s ease forwards;
+  }
+  .entry-divider::before, .entry-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--gold-dark));
+  }
+  .entry-divider::after { background: linear-gradient(to left, transparent, var(--gold-dark)); }
+  .entry-divider-diamond {
+    width: 8px; height: 8px;
+    background: var(--gold);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+  }
+
+  .entry-desc {
+    font-size: 18px;
+    color: rgba(245,237,216,0.65);
+    line-height: 1.75;
+    margin-bottom: 3rem;
+    font-style: italic;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.75s ease forwards;
+  }
+
+  .enter-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: var(--gold);
+    border: none;
+    padding: 16px 48px;
+    cursor: pointer;
+    position: relative;
+    clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px);
+    transition: background 0.2s, transform 0.15s;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.95s ease forwards;
+  }
+  .enter-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .enter-btn:active { transform: scale(0.97); }
+
+  /* ═══════════════════════════════════════════
+     ROOM SCREEN
+  ════════════════════════════════════════════ */
+  #room-screen {
+    flex-direction: column;
+    background: var(--parchment);
+    min-height: 100vh;
+  }
+
+  .room-header {
+    background: var(--ink);
+    padding: 1.4rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--gold-dark);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .room-header-title {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .room-header-sub {
+    font-size: 13px;
+    color: rgba(245,237,216,0.45);
+    font-style: italic;
+  }
+
+  .room-body {
+    padding: 3rem 2rem 4rem;
+    max-width: 980px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .room-intro {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  .room-intro h2 {
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .room-intro p {
+    font-size: 16px;
+    color: rgba(26,18,8,0.55);
+    font-style: italic;
+  }
+
+  .room-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 auto 3rem;
+    width: 200px;
+  }
+  .room-divider::before, .room-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--parchment-deep);
+  }
+  .room-divider-dot {
+    width: 6px; height: 6px;
+    background: var(--gold-dark);
+    transform: rotate(45deg);
+  }
+
+  .folklore-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 18px;
+  }
+
+  .folklore-card {
+    background: var(--cream);
+    border: 1px solid var(--parchment-deep);
+    cursor: pointer;
+    padding: 1.6rem 1.2rem 1.4rem;
+    text-align: center;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0% calc(100% - 12px), 0% 12px);
+    animation: cardIn 0.5s ease both;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .folklore-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(26,18,8,0.12), 0 2px 0 var(--gold-dark);
+    border-color: var(--gold-dark);
+  }
+
+  .folklore-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform 0.2s;
+    transform-origin: center;
+  }
+  .folklore-card:hover::before { transform: scaleX(1); }
+
+  .card-number {
+    position: absolute;
+    top: 10px; right: 12px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    color: var(--parchment-deep);
+    letter-spacing: 1px;
+  }
+
+  .card-icon { font-size: 36px; margin-bottom: 12px; display: block; }
+
+  .card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.35;
+    margin-bottom: 8px;
+  }
+
+  .card-tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold-dark);
+    border: 1px solid var(--parchment-deep);
+    padding: 3px 10px;
+  }
+
+  /* ═══════════════════════════════════════════
+     STORY SCREEN
+  ════════════════════════════════════════════ */
+  #story-screen {
+    flex-direction: column;
+    background: var(--ink);
+    min-height: 100vh;
+  }
+
+  #story-player-screen {
+    flex-direction: column;
+    background: var(--ink);
+    min-height: 100vh;
+  }
+
+  #interactive-screen {
+    flex-direction: column;
+    background: var(--ink);
+    min-height: 100vh;
+  }
+
+  .story-header {
+    background: rgba(26,18,8,0.95);
+    border-bottom: 1px solid rgba(200,153,58,0.25);
+    padding: 1.2rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .back-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: transparent;
+    border: 1px solid rgba(200,153,58,0.35);
+    padding: 8px 18px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .back-btn:hover { background: rgba(200,153,58,0.1); border-color: var(--gold); }
+
+  .story-header-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: rgba(245,237,216,0.5);
+    text-transform: uppercase;
+  }
+
+  .story-body {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 4rem 2rem 5rem;
+    width: 100%;
+  }
+
+  .story-tag-line {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .story-big-icon {
+    font-size: 72px;
+    display: block;
+    margin-bottom: 1.5rem;
+    animation: iconIn 0.6s ease;
+  }
+  @keyframes iconIn {
+    from { transform: scale(0.7) rotate(-8deg); opacity: 0; }
+    to   { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+
+  .story-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 600;
+    color: var(--parchment);
+    line-height: 1.15;
+    margin-bottom: 2.5rem;
+  }
+
+  /* IMAGE PLACEHOLDER */
+  .image-stage {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: rgba(245,237,216,0.04);
+    border: 1px dashed rgba(200,153,58,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .image-stage::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(200,153,58,0.04) 0%, transparent 70%);
+  }
+
+  .image-stage-label {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: rgba(200,153,58,0.45);
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+
+  .image-placeholder-icon {
+    font-size: 48px;
+    opacity: 0.15;
+    position: relative;
+    z-index: 1;
+  }
+
+  .image-frame-corner {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-color: rgba(200,153,58,0.4);
+    border-style: solid;
+  }
+  .image-frame-corner.tl { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+  .image-frame-corner.tr { top: 12px; right: 12px; border-width: 1px 1px 0 0; }
+  .image-frame-corner.bl { bottom: 12px; left: 12px; border-width: 0 0 1px 1px; }
+  .image-frame-corner.br { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
+
+  /* STORY TEXT */
+  .story-text-block {
+    background: rgba(245,237,216,0.04);
+    border-left: 3px solid var(--gold-dark);
+    padding: 1.8rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .story-text {
+    font-size: 19px;
+    color: rgba(245,237,216,0.82);
+    line-height: 1.85;
+    font-style: italic;
+    white-space: pre-line;
+  }
+
+  .story-meta {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .story-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .story-meta-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(200,153,58,0.55);
+    text-transform: uppercase;
+  }
+  .story-meta-value {
+    font-size: 15px;
+    color: rgba(245,237,216,0.7);
+  }
+
+  /* ACTIONS */
+  .story-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    cursor: pointer;
+    border: 1px solid rgba(200,153,58,0.35);
+    color: var(--gold);
+    background: transparent;
+    transition: 0.2s;
+    position: relative;
+  }
+  .action-btn:hover {
+    background: rgba(200,153,58,0.1);
+    border-color: var(--gold);
+  }
+  .action-btn:disabled {
+    cursor: not-allowed;
+    border-color: rgba(245,237,216,0.1);
+    color: rgba(245,237,216,0.25);
+  }
+  .action-btn:disabled:not(#player-next-btn)::after {
+    content: 'Coming soon';
+    position: absolute;
+    top: -22px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--gold);
+    opacity: 0;
+    white-space: nowrap;
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: 1px;
+    font-style: italic;
+    font-weight: 400;
+    text-transform: none;
+    transition: opacity 0.2s;
+  }
+  .action-btn:disabled:not(#player-next-btn):hover::after { opacity: 1; }
+
+  .player-body {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 3rem 2rem 4rem;
+    width: 100%;
+  }
+
+  .player-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(24px, 4vw, 40px);
+    color: var(--parchment);
+    margin-bottom: 1.5rem;
+  }
+
+  .player-stage {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: rgba(245,237,216,0.04);
+    border: 1px solid rgba(200,153,58,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .player-stage img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .player-counter {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: rgba(200,153,58,0.65);
+    text-transform: uppercase;
+    margin-bottom: 1.2rem;
+  }
+
+  .player-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .interactive-stage {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: rgba(245,237,216,0.04);
+    border: 1px solid rgba(200,153,58,0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+  }
+
+  .interactive-stage.is-clickable {
+    cursor: pointer;
+  }
+
+  .interactive-stage img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .maze-grid {
+    display: none;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(10, 1fr);
+    width: min(90%, 70vh, 520px);
+    aspect-ratio: 1;
+    border: 2px solid var(--gold);
+    background: #fff;
+  }
+
+  .maze-cell {
+    border: 1px solid #d6d6d6;
+    background: #fff;
+  }
+
+  .maze-cell.wall { background: #000; }
+  .maze-cell.finish { background: #1f9d55; }
+  .maze-cell.player { background: #1d4ed8; }
+
+  .interactive-caption {
+    font-size: 24px;
+    color: var(--parchment);
+    margin-bottom: 1.5rem;
+    min-height: 1.4em;
+  }
+
+  .interactive-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .folklore-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .room-body { padding: 2rem 1rem 3rem; }
+    .story-body { padding: 2.5rem 1rem 3rem; }
+    .story-actions { flex-direction: column; }
+    .player-body { padding: 2rem 1rem 3rem; }
+    .player-actions { flex-direction: column; }
+    .interactive-actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ ENTRY SCREEN ═══ -->
+<div class="screen active" id="entry-screen">
+  <div class="entry-border"></div>
+
+  <div class="corner tl">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2 L2 16 M2 2 L16 2" stroke="#C8993A" stroke-width="1" opacity="0.6"/>
+      <path d="M2 2 L12 12" stroke="#C8993A" stroke-width="0.5" opacity="0.3"/>
+    </svg>
+  </div>
+  <div class="corner tr">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2 L2 16 M2 2 L16 2" stroke="#C8993A" stroke-width="1" opacity="0.6"/>
+      <path d="M2 2 L12 12" stroke="#C8993A" stroke-width="0.5" opacity="0.3"/>
+    </svg>
+  </div>
+  <div class="corner bl">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2 L2 16 M2 2 L16 2" stroke="#C8993A" stroke-width="1" opacity="0.6"/>
+      <path d="M2 2 L12 12" stroke="#C8993A" stroke-width="0.5" opacity="0.3"/>
+    </svg>
+  </div>
+  <div class="corner br">
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M2 2 L2 16 M2 2 L16 2" stroke="#C8993A" stroke-width="1" opacity="0.6"/>
+      <path d="M2 2 L12 12" stroke="#C8993A" stroke-width="0.5" opacity="0.3"/>
+    </svg>
+  </div>
+
+  <div class="entry-content">
+    <div class="entry-eyebrow"></div>
+    <h1 class="entry-title">
+      Հայաստանի
+      <span>Բանահյուսությունները</span>
+    </h1>
+    <div class="entry-divider"><div class="entry-divider-diamond"></div></div>
+    <p class="entry-desc">
+      Քայլիր մի աշխարհ, որտեղ հին առասպելները ապրում են քամու շշուկներում,որտեղ լեռները պահում են մոռացված լեգենդներ,<br>
+      իսկ ժողովրդական հեքիաթներն ու հնամենի երգերը դեռ կրում են կախարդանքի և տխրության շունչը։
+    </p>
+    <button class="enter-btn" onclick="enterRoom()">Մուտք Սենյակ</button>
+  </div>
+</div>
+
+<!-- ═══ ROOM SCREEN ═══ -->
+<div class="screen" id="room-screen">
+  <div class="room-header">
+    <div class="room-header-title">Բանահյուսական սենյակ</div>
+    <div class="room-header-sub">8 Բանահյուսություն</div>
+  </div>
+  <div class="room-body">
+    <div class="room-intro">
+      <h2>Ընտրիր դռներից մեկը</h2>
+      <p>Ամեն դուռ ունի իր հայկական քաղաքական բանահյուսությունը</p>
+    </div>
+    <div class="room-divider"><div class="room-divider-dot"></div></div>
+    <div class="folklore-grid" id="folklore-grid"></div>
+  </div>
+</div>
+
+<!-- ═══ STORY SCREEN ═══ -->
+<div class="screen" id="story-screen">
+  <div class="story-header">
+    <button class="back-btn" onclick="goBack()">
+      ← Back
+    </button>
+    <div class="story-header-title">Հայասատանի Բանահյուսությունները</div>
+  </div>
+  <div class="story-body">
+    <div class="story-tag-line" id="story-tag"></div>
+    <span class="story-big-icon" id="story-icon"></span>
+    <h1 class="story-title" id="story-title"></h1>
+
+<div class="image-stage" id="image-stage">
+  <div class="image-frame-corner tl"></div>
+  <div class="image-frame-corner tr"></div>
+  <div class="image-frame-corner bl"></div>
+  <div class="image-frame-corner br"></div>
+  <div class="image-placeholder-icon">🖼</div>
+  <div class="image-stage-label">Illustration pending</div>
+  <img id="story-image" src="" alt="" style="
+    display: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  "/>
+</div>
+
+    <div class="story-text-block">
+      <p class="story-text" id="story-desc"></p>
+    </div>
+
+    <div class="story-meta" id="story-meta"></div>
+
+    <div class="story-actions">
+      <button class="action-btn" id="begin-story-btn" onclick="beginStory()">▶ &nbsp; ՍԿՍԵԼ ՊԱՄՈՒԹՅՈՒՆԸ</button>
+      <button class="action-btn" id="listen-aloud-btn" onclick="toggleAudio()">🔊 &nbsp; ԼՍԵԼ</button>
+      <button class="action-btn" id="play-interactive-btn" onclick="openInteractive()">⚔ &nbsp; ԽԱՂԱԼ ԻՆՏԵՐԱԿՏԻՎ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STORY PLAYER SCREEN ═══ -->
+<div class="screen" id="story-player-screen">
+  <div class="story-header">
+    <button class="back-btn" onclick="closeStoryPlayer()">
+      ← Back
+    </button>
+    <div class="story-header-title">Story</div>
+  </div>
+  <div class="player-body">
+    <h1 class="player-title" id="player-title"></h1>
+    <div class="player-stage" onclick="nextStoryImage()" role="button" tabindex="0" onkeydown="if(event.key==='Enter')nextStoryImage()" aria-label="Show next story image">
+      <img id="player-image" src="" alt="" />
+    </div>
+    <div class="player-counter" id="player-counter"></div>
+    <div class="player-actions">
+      <button class="action-btn" id="player-next-btn" onclick="nextStoryImage()">Հաջորդը</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ INTERACTIVE SCREEN ═══ -->
+<div class="screen" id="interactive-screen">
+  <div class="story-header">
+    <button class="back-btn" onclick="closeInteractive()">
+      ← Back
+    </button>
+    <div class="story-header-title">ԻՆՏԵՐԱԿՏԻՎ</div>
+  </div>
+  <div class="player-body">
+    <h1 class="player-title" id="interactive-title"></h1>
+    <div class="interactive-stage" id="interactive-stage" onclick="handleInteractiveImageClick()">
+      <img id="interactive-image" src="" alt="" />
+      <div class="maze-grid" id="maze-grid" tabindex="0" aria-label="Maze game"></div>
+    </div>
+    <div class="interactive-caption" id="interactive-caption"></div>
+    <div class="interactive-actions">
+      <button class="action-btn" id="interactive-start-btn" onclick="startInteractive()">ՍԿՍԵԼ</button>
+      <button class="action-btn" id="interactive-choice-btn" onclick="handleInteractiveButton()" style="display: none;"></button>
+      <button class="action-btn" id="interactive-choice-alt-btn" onclick="handleInteractiveChoice(1)" style="display: none;"></button>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentStory = null;
+let currentImageIndex = -1;
+let currentInteractiveStep = -1;
+let currentGameHits = 0;
+let currentAudio = null;
+let mazePlayer = { row: 0, col: 0 };
+
+const mazeLayout = [
+  [0,0,0,1,0,0,0,0,0,0],
+  [1,1,0,1,0,1,1,1,1,0],
+  [0,0,0,0,0,1,0,0,0,0],
+  [0,1,1,1,0,1,0,1,1,1],
+  [0,0,0,1,0,0,0,0,0,0],
+  [1,1,0,1,1,1,1,1,1,0],
+  [0,0,0,0,0,0,0,0,1,0],
+  [0,1,1,1,1,1,1,0,1,0],
+  [0,0,0,0,0,0,1,0,0,0],
+  [1,1,1,1,1,0,0,0,1,0]
+];
+
+const folklores = [
+  {
+    id: 1, icon: "🌹", title: "Սև տղա - Կարաբալա",
+    image: "Karabala.png",
+    audio: "karabala.m4a",
+    storyImages: [
+      "Karabala2.png",
+      "Karabala3.png",
+      "Karabala4.png",
+      "Karabala5.png",
+      "Karabala6.png",
+      "Karabala7.png",
+      "Karabala8.png"
+    ],
+    interactive: {
+      steps: [
+        { image: "k1.png", caption: "Բարևիր", button: "Բարև Ձեզ", action: "button" },
+        { image: "k2.png", caption: "Այս ծաղիկները քեզ", action: "image" },
+        { image: "k3.png", caption: "", button: "Շնորհակալ եմ", action: "button", end: true }
+      ]
+    },
+    desc: "Երևանցիների կողմից սիրված Կարաբալան (թարգ.՝ սև երեխա)՝ Ստեփան Հարությունյանը, ծնվել է Քանաքեռում անցյալ դարի սկզբին (հավանաբար 1900-ին), հարուստ ընտանիքում, որը ծաղկանոցներ ուներ այժմյան Երևանի մետրոպոլիտենի «Երիտասարդական» կայարանի տարածքում։ Հայաստանում խորհրդային կարգերի հաստատումից հետո ընտանիքն ունեզրկվել է: Ստեփանն ամուսնացել է Աշխեն անունով մի կնոջ հետ, ունեցել որդի: Հանգամանքների բերումով ձերբակալվել է և հայտնվել Եղիշե Չարենցի հետ նույն բանտախցում: Կինը, չսպասելով Ստեփանի ազատ արձակմանը, վաճառել է տունը, ամուսնացել է երկրորդ անգամ և արգելել է որդուն հնադիպել հոր հետ:\n\n" +
+      "Կարաբալան սիրում էր ծաղիկներ նվիրել Աստաֆյան (այժմ՝ Աբովյան) փողոցով անցնող կանանց և աղջիկներին՝ նրանց փոխանցելով իր հոգում պահած սերն ու բարությունը։ Նա հմայվել էր հայտնի դերասանուհի Արուս Ոսկանյանով, ով այդ փողոցով էր անցնում Սունդուկյանի թատրոն աշխատանքի գնալիս, և ամեն օր կարմիր վարդ էր նվիրում նրան։\n\n" +
+      "Տնից ու ընտանիքից զրկված Կարաբալան օրն անց էր կացնում հարազատ դարձած Կենտրոնական հանրախանութի և հարևան «Կովկաս» ռեստորանի մոտ, ապրում էր խանութի պահեստում: Խանութի ստուգումների պատճառով մի քանի օրով ստիպված թողնելով պահեստը՝ ցրտահարվում է դրսում և մահանում հիվանդանոցում՝ միայնակ ու լքված: Նրա գերեզմանի տեղը մինչ օրս անհայտ է:"
+  },
+  {
+    id: 2, icon: "👻", title: "Ուրվական մետրոյում",
+    image: "u.png",
+    audio: "urvakan.m4a",
+    storyImages: [
+      "u1.png",
+      "u2.png",
+      "u3.png"
+    ],
+    interactive: {
+      steps: [
+        { image: "ur.jpg", caption: "սեղմիր նկարին", action: "image" },
+        { image: "u5.png", caption: "", action: "image" },
+        { image: "u6.png", caption: "Ո՞վ էք դուք", button: "End", action: "button", end: true }
+      ]
+    },
+    desc: "Տեղացիներից կարելի է լսել մի հետաքրքիր լեգենդ պարիկով կնոջ մասին։ Ասում են՝ երբ 1980-ականներին Երևանում մետրո բացեցին, " +
+      "«Բարեկամություն» վերջնամասում ուրվական «բնակվեց»։ Երբ մետրոյում քիչ մարդիկ էին մնում 19-րդ դարի վերջի սանրվածքով ու զգեստով աղջիկը մեկ թափառում էր դեպոյում, մեկ թափառում անջատված շարժասանդուղքի վրա։ " +
+      "Երբեմն ուրվականին նկատել են կայարանում՝ մարմարե սալաքարի մոտ, որի վրա պատկերված է իրեն նման մի կին։"
+  },
+  {
+    id: 3, icon: "🦅", title: "Երկաթուղի դեպի ոչ մի տեղ ",
+    image: "e1.png",
+    audio: "ertuxi.m4a",
+    storyImages: [
+      "e2.png",
+      "e3.png",
+      "e4.png",
+      "e5.png"
+    ],
+    interactive: {
+      steps: [
+        { image: "erk1.png", caption: "", action: "image" },
+        { image: "erk2.png", caption: "", action: "image" },
+        { image: "erk3.jpg", caption: "", action: "image" },
+        { image: "erk4.jpg", caption: "", action: "image" },
+        { image: "erk5.jpg", caption: "", button: "End", action: "button", end: true }
+      ]
+    },
+    desc: "Երևանի կենտրոնում ՝ Տաշիր այգում, կա փոքր գետնանցում։ Գրաֆիտիով ներկված երկար թունելն անցնում է Կոնդ թաղամասում ՝ ժայռի տակ ։  Նրա ճնշման տակ ստորգետնյա կառույցի պատերը թեքվել են, ինչի պատճառով անցումն ունի անսովոր ձև ։ Թունելից դուրս գալով ՝ դուք կհայտնվեք Հրազդանի կիրճում, որի կողքին թաքնված էր մանկական ուրվական երկաթուղին ։  Այն կառուցվել է 1937 թվականին, այն ձգվում էր երկու կիլոմետր գեղատեսիլ գետի երկայնքով ։  Երկար տարիներ այստեղ մանկական ծիծաղ էր հնչում, բայց 90-ականների վերջին ատրակցիոնը լքեցին, և այժմ դուրս գրված վագոնների մոտ հազվադեպ եք կենդանի հոգի գտնում ։  Ռելսերը գերաճած են մոլախոտերով, որբ գնացքները ժանգոտված են և ցուցադրում են տեղական փողոցային արվեստը: Sգալով, որ հայտնվում եք Silent Hill-ում"
+  },
+  {
+    id: 4, icon: "🌙", title: "Գորիսի գեղեցկության լեգենդ",
+    image: "g1.jpg",
+    audio: "goris.m4a",
+    storyImages: [
+      "g2.jpg",
+      "g3.jpg",
+      "g4.jpg"
+    ],
+    interactive: {
+      steps: [
+        { image: "goris1.jpg", caption: "", action: "image" },
+        { image: "goris2.jpg", caption: "Կռվիր", action: "image" },
+        { caption: "Օգտագործիր սլաքների կոճակները՝ կանաչ քառակուսուն հասնելու համար։", action: "maze" },
+        { image: "goris3.jpg", caption: "Դուք հաղթեցիք", action: "image" },
+        { image: "goris6.png", caption: "", action: "image" },
+        { image: "goris4.jpg", caption: "", action: "image" },
+        { image: "goris5.jpg", caption: "", button: "End", action: "button", end: true }
+      ]
+    },
+    desc: `Հնում Սյունիքում ապրում էր Գորիս անունով անզուգական գեղեցկուհի մի աղջիկ։ Նրա համբավը տարածվեց ամբողջ աշխարհում, և բոլոր կողմերից հրոսակներ եկան՝ նրան տիրանալու համար։ Սակայն գեղեցկուհին չհանձնվեց։
+Նա ելավ աշտարակի վրա և կախարդական ուժով պոկեց իր մարմնի մասերը՝ շպրտելով դեպի սարահարթը։ Կուրծքը դարձավ գետահովիտ, սրունքները՝ քարե բուրգ-սյուներ, մյուս մասերը՝ ձորակներ, քարանձավներ։ Այդպես նա ինքնազոհությամբ գեղեցկացրեց հայրենի բնությունը։
+Գեղեցկուհու անունով բնակավայրը կոչվեց Գորիս։ Գետի երկու ափերին հիմնվեցին Գորու և Գորայք գյուղերը, որոնց տարածքում 1870 թվականին հիմնադրվեց Գորիս քաղաքը։`
+  },
+  {
+    id: 5, icon: "🔥", title: "Աշտարակի Սուրբ Մարիանե եկեղեցու ավանդազրույցը",
+    image: "ash.png",
+    audio: "Ashtarak.m4a",
+    storyImages: [
+      "ash1.jpg",
+      "ash2.jpg",
+      "ash3.jpg",
+      "ash4.jpg",
+      "ash5.jpg",
+      "ash6.jpg",
+      "ash7.jpg"
+    ],
+    interactive: {
+      steps: [
+        { image: "ashtarak1.jpg", caption: "", action: "image" },
+        { image: "ashtarak2.jpg", caption: "", action: "image" },
+        { image: "ashtarak3.jpg", caption: "", action: "image" },
+        { image: "ashtarak4.jpg", caption: "", action: "image" },
+        {
+          image: "ashtarak5.jpg",
+          caption: "Ուզու՞մ ես ամուսնանալ",
+          action: "choice",
+          choices: [
+            { label: "ԱՅՈ", next: 5 },
+            { label: "Ոչ", next: 6 }
+          ]
+        },
+        { image: "ashtarak6.jpg", caption: "", button: "End", action: "button", end: true },
+        { image: "ashtarak7.jpg", caption: "", button: "End", action: "button", end: true }
+      ]
+    },
+    desc: `Աշտարակում ապրում էր մի երիտասարդ ու հարուստ քահանա, ով վաղաժամ կորցրել էր կնոջը և Կաթողիկոսից խնդրել էր կրկին ամուսնանալու թույլտվություն։ Կաթողիկոսը, մտածելով, որ ժամանակի ընթացքում քահանան կփոխի իր միտքը, նրան ծանր պայմաններ դրեց։
+
+Նախ պահանջեց նախ մի եկեղեցի կառուցել։ Քահանան մեծ գումար ծախսելով և աշխատելով կառուցեց Սուրբ Մարիանե եկեղեցին։ Երբ եկեղեցին պատրաստ եղավ, Կաթողիկոսը նոր պայման դրեց՝ շրջապատել այն բարձր պարիսպներով և կառուցել խցեր միաբանության համար։ Քահանան կատարեց նաև այս հանձնարարությունը՝ ծախսելով իր ողջ կարողությունը և ծերանալով։
+
+Երբ վերջապես ամուսնության թույլտվությունը ստացավ, նա հրաժարվեց իր նախկին ցանկությունից և ապաշխարելով՝ միաբան դարձավ իր իսկ կառուցած եկեղեցում։`
+  },
+  {
+    id: 7, icon: "🐺", title: "Օժիտի տուն",
+    image: "oj.png",
+    audio: "Ojit.m4a",
+    storyImages: [
+      "oj1.jpg",
+      "oj2.jpg",
+      "oj3.jpg",
+      "oj4.jpg"
+    ],
+    interactive: {
+      steps: [
+        { image: "tun1.jpg", caption: "", action: "image" },
+        { image: "tun2.jpg", caption: "", action: "image" },
+        {
+          image: "tun3.jpg",
+          caption: "Ուզու՞մ ես ամուսնանալ",
+          action: "choice",
+          choices: [
+            { label: "ԱՅՈ", next: 3 },
+            { label: "ՈՉ", end: true }
+          ]
+        },
+        { image: "tun4.jpg", caption: "", button: "End", action: "button", end: true }
+      ]
+    },
+    desc: "Այս գեղեցիկ սև տուֆե շենքը պատկանել է քաղաքի ամենահարուստ ընտանիքներից մեկին՝ Դրամփյաններին: Ընտանիքի դուստրը՝ Ջավահիրը, երկար ժամանակ ամուսնացած չէր՝ իր կռվարար բնավորության պատճառով, ինչպես ասում էին գյումրեցիները: Ծնողները խոստացել էին շենքը որպես օժիտ տալ նրան, ով կամուսնանա երիտասարդ Դրամփյանի հետ: Երբ նրանք հայտարարեցին օժիտի մասին, շուտով հայտնվեց հավակնորդ՝Ալեքսանդրապոլի առաջին քաղաքապետ Գեղամ Մարկարովիչ Տեր-Պետրոսյանցը։ Այստեղից էլ առաջացել է «Օժիտի Շենք» անվանումը:"
+  },
+  {
+    id: 8, icon: "👁️", title: "Ապարան",
+    image: "ap0.png",
+    audio: "Aparan.m4a",
+    storyImages: [
+      "ap.png",
+      "ap1.png",
+      "ap2.png"
+    ],
+    interactive: {
+      steps: [
+        { image: "aparan1.jpg", caption: "", action: "image" },
+        { image: "aparan2.jpg", caption: "", action: "image" },
+        { image: "aparan3.jpg", caption: "", action: "image" },
+        { image: "aparan4.jpg", caption: "", button: "End", action: "button", end: true }
+      ]
+    },
+    desc: "Ավանդությունը պատմում է, որ Արագածի չորս գագաթներին առանց պարանի (անպարան) կախված է Գրիգոր Լուսավորչի արտասուքով լի կանթեղը։ Այդ կանթեղը մշտավառ է, երբեք չի հանգչում, սակայն տեսանելի է միայն ազնիվ ու արդար մարդկանց։ Անպարան կանթեղի անունով էլ այդ բնակավայրը կոչվել է Անպարան, որ աստիճանաբար դարձել է Ապարան"
+  },
+  {
+    id: 9, icon: "🌿", title: "Երևան",
+    image: "noy1.jpg",
+    audio: "Yerevan.m4a",
+    storyImages: [
+      "noy1.jpg",
+      "noy2.jpg",
+      "noy3.jpg"
+    ],
+    interactive: {
+      steps: [
+        { image: "er2.jpg", caption: "Սեղմիր նավի վրա", action: "image" },
+        { image: "er1.jpg", caption: "Բարի Գալուստ մեր նավը", action: "image" },
+        { image: "er3.jpg", caption: "Սեղմիր պատուհանի վրա", action: "image" },
+        { image: "er7.png", caption: "", action: "image" },
+        { image: "er4.png", caption: "", action: "image" },
+        { image: "er5.png", caption: "", button: "End", action: "button", end: true }
+      ]
+    },
+    desc: "Ըստ ավանդության, երբ Նոյյան տապանը ջրհեղեղից հետո կանգ առավ Արարատի գագաթին, Նոյը դուրս եկավ տապանից իր երեք որդիների, հարսերի և թոռների հետ։ Նայելով շուրջը՝ նա տեսավ ցամաքը և բացականչեց՝ «Երևաց»։ Այդ խոսքից էլ, ասում են, առաջացել է Երևանի անունը։"
+  }
+];
+
+function enterRoom() {
+  switchScreen('entry-screen', 'room-screen');
+  const grid = document.getElementById('folklore-grid');
+  grid.innerHTML = folklores.map((f, i) => `
+    <div class="folklore-card" onclick="openStory(${f.id})" role="button" tabindex="0"
+      style="animation-delay: ${i * 0.06}s"
+      onkeydown="if(event.key==='Enter')openStory(${f.id})"
+      aria-label="Open ${f.title}">
+      <div class="card-number">${String(i+1).padStart(2,'0')}</div>
+      <span class="card-icon">${f.icon}</span>
+      <div class="card-title">${f.title}</div>
+      ${f.tag ? `<div class="card-tag">${f.tag}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function openStory(id) {
+  const f = folklores.find(x => x.id === id);
+  currentStory = f;
+  currentImageIndex = -1;
+  switchScreen('room-screen', 'story-screen');
+  const storyTag = document.getElementById('story-tag');
+  storyTag.textContent = f.tag || '';
+  storyTag.style.display = f.tag ? 'block' : 'none';
+  document.getElementById('story-icon').textContent = f.icon || '';
+  document.getElementById('story-title').textContent = f.title;
+  document.getElementById('story-desc').textContent = f.desc || '';
+  document.getElementById('begin-story-btn').style.display = f.storyImages ? 'inline-block' : 'none';
+  document.getElementById('play-interactive-btn').style.display = f.interactive ? 'inline-block' : 'none';
+  const listenButton = document.getElementById('listen-aloud-btn');
+  listenButton.disabled = !f.audio;
+  listenButton.innerHTML = '🔊 &nbsp; ԼՍԵԼ';
+  stopAudio();
+  const img = document.getElementById('story-image');
+  const placeholder = document.querySelector('.image-placeholder-icon');
+  const label = document.querySelector('.image-stage-label');
+  label.textContent = 'Illustration pending';
+  if (f.image) {
+    img.src = f.image;
+    img.alt = f.title;
+    img.style.display = 'block';
+    img.onload = () => { img.style.opacity = '1'; };
+    img.onerror = () => {
+      img.style.display = 'none';
+      img.style.opacity = '0';
+      placeholder.style.display = 'block';
+      label.style.display = 'block';
+    };
+    placeholder.style.display = 'none';
+    label.style.display = 'none';
+  } else {
+    img.style.display = 'none';
+    img.style.opacity = '0';
+    placeholder.style.display = 'block';
+    label.style.display = 'block';
+  }
+
+  const metaItems = [
+    { label: 'Period', value: f.period },
+    { label: 'Origin', value: f.origin }
+  ].filter(item => item.value);
+  document.getElementById('story-meta').innerHTML = metaItems.map(item => `
+    <div class="story-meta-item">
+      <span class="story-meta-label">${item.label}</span>
+      <span class="story-meta-value">${item.value}</span>
+    </div>
+  `).join('');
+  window.scrollTo(0, 0);
+}
+
+function toggleAudio() {
+  if (!currentStory || !currentStory.audio) return;
+
+  const listenButton = document.getElementById('listen-aloud-btn');
+
+  if (!currentAudio || currentAudio.src.split('/').pop() !== currentStory.audio) {
+    stopAudio();
+    currentAudio = new Audio(currentStory.audio);
+    currentAudio.onended = () => {
+      listenButton.innerHTML = '🔊 &nbsp; ԼՍԵԼ';
+    };
+  }
+
+  if (currentAudio.paused) {
+    currentAudio.play();
+    listenButton.innerHTML = '⏸ &nbsp; ԴԱԴԱՐ';
+  } else {
+    currentAudio.pause();
+    listenButton.innerHTML = '🔊 &nbsp; ԼՍԵԼ';
+  }
+}
+
+function stopAudio() {
+  if (!currentAudio) return;
+
+  currentAudio.pause();
+  currentAudio.currentTime = 0;
+  currentAudio = null;
+}
+
+function beginStory() {
+  if (!currentStory || !currentStory.storyImages) return;
+
+  currentImageIndex = 0;
+  document.getElementById('player-title').textContent = currentStory.title;
+  switchScreen('story-screen', 'story-player-screen');
+  showStoryImage();
+  window.scrollTo(0, 0);
+}
+
+function nextStoryImage() {
+  if (!currentStory || !currentStory.storyImages) return;
+
+  if (currentImageIndex < currentStory.storyImages.length - 1) {
+    currentImageIndex += 1;
+    showStoryImage();
+  } else {
+    closeStoryPlayer();
+  }
+}
+
+function showStoryImage() {
+  const images = currentStory.storyImages;
+  const img = document.getElementById('player-image');
+  const counter = document.getElementById('player-counter');
+  const nextButton = document.getElementById('player-next-btn');
+
+  img.style.opacity = '0';
+  img.src = images[currentImageIndex];
+  img.alt = `${currentStory.title} illustration ${currentImageIndex + 1}`;
+
+  img.onload = () => {
+    counter.textContent = `${currentImageIndex + 1} / ${images.length}`;
+    img.style.opacity = '1';
+    nextButton.disabled = false;
+    nextButton.textContent = currentImageIndex >= images.length - 1 ? 'End' : 'Next';
+  };
+
+  img.onerror = () => {
+    if (currentImageIndex < images.length - 1) {
+      currentImageIndex += 1;
+      showStoryImage();
+      return;
+    }
+
+    img.style.opacity = '0';
+    counter.textContent = 'Illustration unavailable';
+    nextButton.disabled = false;
+    nextButton.textContent = 'End';
+  };
+}
+
+function closeStoryPlayer() {
+  switchScreen('story-player-screen', 'story-screen');
+  window.scrollTo(0, 0);
+}
+
+function openInteractive() {
+  if (!currentStory || !currentStory.interactive) return;
+
+  currentInteractiveStep = -1;
+  currentGameHits = 0;
+  document.getElementById('interactive-title').textContent = currentStory.title;
+  document.getElementById('interactive-stage').style.display = 'none';
+  document.getElementById('interactive-stage').classList.remove('is-clickable');
+  document.getElementById('interactive-image').src = '';
+  document.getElementById('interactive-image').style.display = 'block';
+  document.getElementById('maze-grid').style.display = 'none';
+  document.getElementById('interactive-caption').textContent = '';
+  document.getElementById('interactive-start-btn').style.display = 'inline-block';
+  document.getElementById('interactive-choice-btn').style.display = 'none';
+  document.getElementById('interactive-choice-alt-btn').style.display = 'none';
+  switchScreen('story-screen', 'interactive-screen');
+  window.scrollTo(0, 0);
+}
+
+function startInteractive() {
+  currentInteractiveStep = 0;
+  document.getElementById('interactive-start-btn').style.display = 'none';
+  showInteractiveStep();
+}
+
+function handleInteractiveButton() {
+  const step = getCurrentInteractiveStep();
+  if (step && step.action === 'choice') {
+    handleInteractiveChoice(0);
+    return;
+  }
+
+  if (!step || (step.action !== 'button' && step.action !== 'fight')) return;
+
+  if (step.action === 'fight') {
+    const targetHits = step.targetHits || 5;
+    const button = document.getElementById('interactive-choice-btn');
+    currentGameHits += 1;
+
+    if (currentGameHits >= targetHits) {
+      currentInteractiveStep += 1;
+      showInteractiveStep();
+      return;
+    }
+
+    button.textContent = `Կռվիր ${currentGameHits}/${targetHits}`;
+    return;
+  }
+
+  if (step.end) {
+    closeInteractive();
+    return;
+  }
+
+  currentInteractiveStep += 1;
+  showInteractiveStep();
+}
+
+function handleInteractiveChoice(choiceIndex) {
+  const step = getCurrentInteractiveStep();
+  if (!step || step.action !== 'choice' || !step.choices) return;
+
+  const choice = step.choices[choiceIndex];
+  if (!choice) return;
+
+  if (choice.end) {
+    closeInteractive();
+    return;
+  }
+
+  currentInteractiveStep = typeof choice.next === 'number' ? choice.next : currentInteractiveStep + 1;
+  showInteractiveStep();
+}
+
+function handleInteractiveImageClick() {
+  const step = getCurrentInteractiveStep();
+  if (!step || step.action !== 'image') return;
+
+  currentInteractiveStep += 1;
+  showInteractiveStep();
+}
+
+function getCurrentInteractiveStep() {
+  if (!currentStory || !currentStory.interactive) return null;
+  return currentStory.interactive.steps[currentInteractiveStep] || null;
+}
+
+function showInteractiveStep() {
+  const step = getCurrentInteractiveStep();
+  const stage = document.getElementById('interactive-stage');
+  const image = document.getElementById('interactive-image');
+  const maze = document.getElementById('maze-grid');
+  const caption = document.getElementById('interactive-caption');
+  const button = document.getElementById('interactive-choice-btn');
+  const altButton = document.getElementById('interactive-choice-alt-btn');
+
+  if (!step) {
+    closeInteractive();
+    return;
+  }
+
+  stage.style.display = 'flex';
+  stage.classList.remove('is-clickable');
+  image.style.display = 'block';
+  maze.style.display = 'none';
+  button.style.display = 'none';
+  altButton.style.display = 'none';
+  currentGameHits = 0;
+
+  if (step.action === 'maze') {
+    image.style.display = 'none';
+    maze.style.display = 'grid';
+    caption.textContent = step.caption || '';
+    startMazeGame();
+    return;
+  }
+
+  image.src = step.image;
+  image.alt = step.caption || currentStory.title;
+  caption.textContent = step.caption || '';
+
+  if (step.action === 'image') {
+    stage.classList.add('is-clickable');
+  }
+
+  if (step.button) {
+    button.textContent = step.button;
+    button.style.display = 'inline-block';
+  }
+
+  if (step.action === 'fight') {
+    const targetHits = step.targetHits || 5;
+    button.textContent = `Կռվիր 0/${targetHits}`;
+    button.style.display = 'inline-block';
+  }
+
+  if (step.action === 'choice' && step.choices) {
+    button.textContent = step.choices[0]?.label || '';
+    button.style.display = step.choices[0] ? 'inline-block' : 'none';
+    altButton.textContent = step.choices[1]?.label || '';
+    altButton.style.display = step.choices[1] ? 'inline-block' : 'none';
+  }
+}
+
+function startMazeGame() {
+  mazePlayer = { row: 0, col: 0 };
+  renderMaze();
+  document.getElementById('maze-grid').focus();
+}
+
+function renderMaze() {
+  const maze = document.getElementById('maze-grid');
+  maze.innerHTML = '';
+
+  // Draw each cell in the 10x10 maze using CSS Grid.
+  mazeLayout.forEach((row, rowIndex) => {
+    row.forEach((cell, colIndex) => {
+      const tile = document.createElement('div');
+      tile.className = 'maze-cell';
+
+      if (cell === 1) tile.classList.add('wall');
+      if (rowIndex === 9 && colIndex === 9) tile.classList.add('finish');
+      if (mazePlayer.row === rowIndex && mazePlayer.col === colIndex) tile.classList.add('player');
+
+      maze.appendChild(tile);
+    });
+  });
+}
+
+function handleMazeKey(event) {
+  const step = getCurrentInteractiveStep();
+  if (!step || step.action !== 'maze') return;
+
+  const moves = {
+    ArrowUp: [-1, 0],
+    ArrowDown: [1, 0],
+    ArrowLeft: [0, -1],
+    ArrowRight: [0, 1]
+  };
+
+  if (!moves[event.key]) return;
+  event.preventDefault();
+
+  // Calculate the next position and stop if it is outside the maze.
+  const [rowMove, colMove] = moves[event.key];
+  const nextRow = mazePlayer.row + rowMove;
+  const nextCol = mazePlayer.col + colMove;
+
+  if (nextRow < 0 || nextRow >= 10 || nextCol < 0 || nextCol >= 10) return;
+
+  // Walls are marked as 1, so the player cannot move into those cells.
+  if (mazeLayout[nextRow][nextCol] === 1) return;
+
+  mazePlayer = { row: nextRow, col: nextCol };
+  renderMaze();
+
+  // Reaching the bottom-right green cell wins the maze and continues the story.
+  if (mazePlayer.row === 9 && mazePlayer.col === 9) {
+    alert('You Win!');
+    currentInteractiveStep += 1;
+    showInteractiveStep();
+  }
+}
+
+document.addEventListener('keydown', handleMazeKey);
+
+function closeInteractive() {
+  switchScreen('interactive-screen', 'story-screen');
+  window.scrollTo(0, 0);
+}
+
+function goBack() {
+  switchScreen('story-screen', 'room-screen');
+  window.scrollTo(0, 0);
+}
+
+function switchScreen(fromId, toId) {
+  document.getElementById(fromId).classList.remove('active');
+  document.getElementById(toId).classList.add('active');
+}
+</script>
+</body>
+</html>
