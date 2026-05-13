@@ -1,756 +1,422 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Armenian Folklore</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cinzel:wght@400;600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet" />
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --gold: #C8993A;
-    --gold-light: #E8C46A;
-    --gold-dark: #8B6514;
-    --ink: #1A1208;
-    --parchment: #F5EDD8;
-    --parchment-dark: #E8D9B8;
-    --parchment-deep: #D4C299;
-    --red-deep: #7A1E1E;
-    --red-mid: #A33030;
-    --cream: #FBF5E6;
-    --shadow: rgba(26,18,8,0.18);
-  }
-
-  html, body {
-    min-height: 100%;
-    background: var(--ink);
-    font-family: 'Cormorant Garamond', serif;
-    color: var(--ink);
-    overflow-x: hidden;
-  }
-
-  /* ─── NOISE TEXTURE OVERLAY ─── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-    pointer-events: none;
-    z-index: 1000;
-    opacity: 0.5;
-  }
-
-  /* ─── SCREENS ─── */
-  .screen { display: none; min-height: 100vh; }
-  .screen.active { display: flex; }
-
-  /* ═══════════════════════════════════════════
-     ENTRY SCREEN
-  ════════════════════════════════════════════ */
-  #entry-screen {
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: var(--ink);
-    position: relative;
-    padding: 2rem;
-    overflow: hidden;
-  }
-
-  #entry-screen::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 60% 40% at 50% 60%, rgba(200,153,58,0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 30% at 20% 20%, rgba(122,30,30,0.1) 0%, transparent 60%),
-      radial-gradient(ellipse 30% 40% at 80% 80%, rgba(122,30,30,0.08) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .entry-border {
-    position: absolute;
-    inset: 20px;
-    border: 1px solid rgba(200,153,58,0.2);
-    pointer-events: none;
-  }
-  .entry-border::before {
-    content: '';
-    position: absolute;
-    inset: 6px;
-    border: 1px solid rgba(200,153,58,0.1);
-  }
-
-  /* Corner ornaments */
-  .corner { position: absolute; width: 40px; height: 40px; }
-  .corner svg { width: 100%; height: 100%; }
-  .corner.tl { top: 14px; left: 14px; }
-  .corner.tr { top: 14px; right: 14px; transform: scaleX(-1); }
-  .corner.bl { bottom: 14px; left: 14px; transform: scaleY(-1); }
-  .corner.br { bottom: 14px; right: 14px; transform: scale(-1,-1); }
-
-  .entry-content {
-    position: relative;
-    z-index: 2;
-    text-align: center;
-    max-width: 540px;
-  }
-
-  .entry-eyebrow {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 4px;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.2s ease forwards;
-  }
-
-  .entry-title {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(42px, 8vw, 72px);
-    font-weight: 600;
-    color: var(--parchment);
-    line-height: 1.05;
-    margin-bottom: 0.4rem;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.4s ease forwards;
-  }
-
-  .entry-title span {
-    color: var(--gold);
-    display: block;
-    font-weight: 400;
-    font-style: italic;
-  }
-
-  .entry-divider {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin: 1.8rem auto;
-    width: 260px;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.6s ease forwards;
-  }
-  .entry-divider::before, .entry-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--gold-dark));
-  }
-  .entry-divider::after { background: linear-gradient(to left, transparent, var(--gold-dark)); }
-  .entry-divider-diamond {
-    width: 8px; height: 8px;
-    background: var(--gold);
-    transform: rotate(45deg);
-    flex-shrink: 0;
-  }
-
-  .entry-desc {
-    font-size: 18px;
-    color: rgba(245,237,216,0.65);
-    line-height: 1.75;
-    margin-bottom: 3rem;
-    font-style: italic;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.75s ease forwards;
-  }
-
-  .enter-btn {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--ink);
-    background: var(--gold);
-    border: none;
-    padding: 16px 48px;
-    cursor: pointer;
-    position: relative;
-    clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px);
-    transition: background 0.2s, transform 0.15s;
-    opacity: 0;
-    animation: fadeUp 0.8s 0.95s ease forwards;
-  }
-  .enter-btn:hover { background: var(--gold-light); transform: translateY(-2px); }
-  .enter-btn:active { transform: scale(0.97); }
-
-  /* ═══════════════════════════════════════════
-     ROOM SCREEN
-  ════════════════════════════════════════════ */
-  #room-screen {
-    flex-direction: column;
-    background: var(--parchment);
-    min-height: 100vh;
-  }
-
-  .room-header {
-    background: var(--ink);
-    padding: 1.4rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 2px solid var(--gold-dark);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .room-header-title {
-    font-family: 'Cinzel', serif;
-    font-size: 14px;
-    letter-spacing: 3px;
-    color: var(--gold);
-    text-transform: uppercase;
-  }
-
-  .room-header-sub {
-    font-size: 13px;
-    color: rgba(245,237,216,0.45);
-    font-style: italic;
-  }
-
-  .room-body {
-    padding: 3rem 2rem 4rem;
-    max-width: 980px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .room-intro {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-  .room-intro h2 {
-    font-family: 'Cinzel', serif;
-    font-size: 28px;
-    font-weight: 400;
-    color: var(--ink);
-    margin-bottom: 8px;
-  }
-  .room-intro p {
-    font-size: 16px;
-    color: rgba(26,18,8,0.55);
-    font-style: italic;
-  }
-
-  .room-divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 0 auto 3rem;
-    width: 200px;
-  }
-  .room-divider::before, .room-divider::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--parchment-deep);
-  }
-  .room-divider-dot {
-    width: 6px; height: 6px;
-    background: var(--gold-dark);
-    transform: rotate(45deg);
-  }
-
-  .folklore-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 18px;
-  }
-
-  .folklore-card {
-    background: var(--cream);
-    border: 1px solid var(--parchment-deep);
-    cursor: pointer;
-    padding: 1.6rem 1.2rem 1.4rem;
-    text-align: center;
-    position: relative;
-    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-    clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0% calc(100% - 12px), 0% 12px);
-    animation: cardIn 0.5s ease both;
-  }
-
-  @keyframes cardIn {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .folklore-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 32px rgba(26,18,8,0.12), 0 2px 0 var(--gold-dark);
-    border-color: var(--gold-dark);
-  }
-
-  .folklore-card::before {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 3px;
-    background: var(--gold);
-    transform: scaleX(0);
-    transition: transform 0.2s;
-    transform-origin: center;
-  }
-  .folklore-card:hover::before { transform: scaleX(1); }
-
-  .card-number {
-    position: absolute;
-    top: 10px; right: 12px;
-    font-family: 'Cinzel', serif;
-    font-size: 10px;
-    color: var(--parchment-deep);
-    letter-spacing: 1px;
-  }
-
-  .card-icon { font-size: 36px; margin-bottom: 12px; display: block; }
-
-  .card-title {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--ink);
-    line-height: 1.35;
-    margin-bottom: 8px;
-  }
-
-  .card-tag {
-    display: inline-block;
-    font-size: 10px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--gold-dark);
-    border: 1px solid var(--parchment-deep);
-    padding: 3px 10px;
-  }
-
-  /* ═══════════════════════════════════════════
-     STORY SCREEN
-  ════════════════════════════════════════════ */
-  #story-screen {
-    flex-direction: column;
-    background: var(--ink);
-    min-height: 100vh;
-  }
-
-  .story-header {
-    background: rgba(26,18,8,0.95);
-    border-bottom: 1px solid rgba(200,153,58,0.25);
-    padding: 1.2rem 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-
-  .back-btn {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--gold);
-    background: transparent;
-    border: 1px solid rgba(200,153,58,0.35);
-    padding: 8px 18px;
-    cursor: pointer;
-    transition: background 0.15s, border-color 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .back-btn:hover { background: rgba(200,153,58,0.1); border-color: var(--gold); }
-
-  .story-header-title {
-    font-family: 'Cinzel', serif;
-    font-size: 13px;
-    letter-spacing: 2px;
-    color: rgba(245,237,216,0.5);
-    text-transform: uppercase;
-  }
-
-  .story-body {
-    max-width: 780px;
-    margin: 0 auto;
-    padding: 4rem 2rem 5rem;
-    width: 100%;
-  }
-
-  .story-tag-line {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 4px;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 1rem;
-  }
-
-  .story-big-icon {
-    font-size: 72px;
-    display: block;
-    margin-bottom: 1.5rem;
-    animation: iconIn 0.6s ease;
-  }
-  @keyframes iconIn {
-    from { transform: scale(0.7) rotate(-8deg); opacity: 0; }
-    to   { transform: scale(1) rotate(0deg); opacity: 1; }
-  }
-
-  .story-title {
-    font-family: 'Cinzel', serif;
-    font-size: clamp(28px, 5vw, 48px);
-    font-weight: 600;
-    color: var(--parchment);
-    line-height: 1.15;
-    margin-bottom: 2.5rem;
-  }
-
-  /* IMAGE PLACEHOLDER */
-  .image-stage {
-    width: 100%;
-    aspect-ratio: 16/9;
-    background: rgba(245,237,216,0.04);
-    border: 1px dashed rgba(200,153,58,0.3);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 2.5rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .image-stage::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center, rgba(200,153,58,0.04) 0%, transparent 70%);
-  }
-
-  .image-stage-label {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: rgba(200,153,58,0.45);
-    text-transform: uppercase;
-  }
-
-  .image-placeholder-icon {
-    font-size: 48px;
-    opacity: 0.15;
-  }
-
-  .image-frame-corner {
-    position: absolute;
-    width: 24px;
-    height: 24px;
-    border-color: rgba(200,153,58,0.4);
-    border-style: solid;
-  }
-  .image-frame-corner.tl { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
-  .image-frame-corner.tr { top: 12px; right: 12px; border-width: 1px 1px 0 0; }
-  .image-frame-corner.bl { bottom: 12px; left: 12px; border-width: 0 0 1px 1px; }
-  .image-frame-corner.br { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
-
-  /* STORY TEXT */
-  .story-text-block {
-    background: rgba(245,237,216,0.04);
-    border-left: 3px solid var(--gold-dark);
-    padding: 1.8rem 2rem;
-    margin-bottom: 2.5rem;
-  }
-
-  .story-text {
-    font-size: 19px;
-    color: rgba(245,237,216,0.82);
-    line-height: 1.85;
-    font-style: italic;
-  }
-
-  .story-meta {
-    display: flex;
-    gap: 2rem;
-    margin-bottom: 3rem;
-    flex-wrap: wrap;
-  }
-
-  .story-meta-item {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
-  .story-meta-label {
-    font-family: 'Cinzel', serif;
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: rgba(200,153,58,0.55);
-    text-transform: uppercase;
-  }
-  .story-meta-value {
-    font-size: 15px;
-    color: rgba(245,237,216,0.7);
-  }
-
-  /* ACTIONS */
-  .story-actions {
-    display: flex;
-    gap: 14px;
-    flex-wrap: wrap;
-  }
-
-  .action-btn {
-    font-family: 'Cinzel', serif;
-    font-size: 11px;
-    letter-spacing: 2.5px;
-    text-transform: uppercase;
-    padding: 14px 32px;
-    cursor: not-allowed;
-    border: 1px solid rgba(245,237,216,0.1);
-    color: rgba(245,237,216,0.25);
-    background: transparent;
-    transition: 0.2s;
-    position: relative;
-  }
-  .action-btn::after {
-    content: 'Coming soon';
-    position: absolute;
-    top: -22px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 10px;
-    color: var(--gold);
-    opacity: 0;
-    white-space: nowrap;
-    font-family: 'Cormorant Garamond', serif;
-    letter-spacing: 1px;
-    font-style: italic;
-    font-weight: 400;
-    text-transform: none;
-    transition: opacity 0.2s;
-  }
-  .action-btn:hover::after { opacity: 1; }
-
-  /* ─── ANIMATIONS ─── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ─── RESPONSIVE ─── */
-  @media (max-width: 600px) {
-    .folklore-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .room-body { padding: 2rem 1rem 3rem; }
-    .story-body { padding: 2.5rem 1rem 3rem; }
-    .story-actions { flex-direction: column; }
-  }
-</style>
-</head>
-<body>
-
-<!-- ═══ ENTRY SCREEN ═══ -->
-<div class="screen active" id="entry-screen">
-  <div class="entry-border"></div>
-
-  <div class="corner tl">
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 2 L2 16 M2 2 L16 2" stroke="#C8993A" stroke-width="1" opacity="0.6"/>
-      <path d="M2 2 L12 12" stroke="#C8993A" stroke-width="0.5" opacity="0.3"/>
-    </svg>
-  </div>
-  <div class="corner tr">
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 2 L2 16 M2 2 L16 2" stroke="#C8993A" stroke-width="1" opacity="0.6"/>
-      <path d="M2 2 L12 12" stroke="#C8993A" stroke-width="0.5" opacity="0.3"/>
-    </svg>
-  </div>
-  <div class="corner bl">
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 2 L2 16 M2 2 L16 2" stroke="#C8993A" stroke-width="1" opacity="0.6"/>
-      <path d="M2 2 L12 12" stroke="#C8993A" stroke-width="0.5" opacity="0.3"/>
-    </svg>
-  </div>
-  <div class="corner br">
-    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M2 2 L2 16 M2 2 L16 2" stroke="#C8993A" stroke-width="1" opacity="0.6"/>
-      <path d="M2 2 L12 12" stroke="#C8993A" stroke-width="0.5" opacity="0.3"/>
-    </svg>
-  </div>
-
-  <div class="entry-content">
-    <div class="entry-eyebrow">Ancient Tales of Armenia</div>
-    <h1 class="entry-title">
-      Armenian
-      <span>Folklore</span>
-    </h1>
-    <div class="entry-divider"><div class="entry-divider-diamond"></div></div>
-    <p class="entry-desc">
-      Step into a world of dragons and gods,<br>
-      heroes and goddesses, magic and sorrow.
-    </p>
-    <button class="enter-btn" onclick="enterRoom()">Enter the Room</button>
-  </div>
-</div>
-
-<!-- ═══ ROOM SCREEN ═══ -->
-<div class="screen" id="room-screen">
-  <div class="room-header">
-    <div class="room-header-title">The Folklore Chamber</div>
-    <div class="room-header-sub">10 tales within</div>
-  </div>
-  <div class="room-body">
-    <div class="room-intro">
-      <h2>Choose Your Tale</h2>
-      <p>Each door leads to a different story from the Armenian land</p>
-    </div>
-    <div class="room-divider"><div class="room-divider-dot"></div></div>
-    <div class="folklore-grid" id="folklore-grid"></div>
-  </div>
-</div>
-
-<!-- ═══ STORY SCREEN ═══ -->
-<div class="screen" id="story-screen">
-  <div class="story-header">
-    <button class="back-btn" onclick="goBack()">
-      ← Back
-    </button>
-    <div class="story-header-title">Armenian Folklore</div>
-  </div>
-  <div class="story-body">
-    <div class="story-tag-line" id="story-tag"></div>
-    <span class="story-big-icon" id="story-icon"></span>
-    <h1 class="story-title" id="story-title"></h1>
-
-    <div class="image-stage">
-      <div class="image-frame-corner tl"></div>
-      <div class="image-frame-corner tr"></div>
-      <div class="image-frame-corner bl"></div>
-      <div class="image-frame-corner br"></div>
-      <div class="image-placeholder-icon">🖼</div>
-      <div class="image-stage-label">Illustration — coming soon</div>
-    </div>
-
-    <div class="story-text-block">
-      <p class="story-text" id="story-desc"></p>
-    </div>
-
-    <div class="story-meta" id="story-meta"></div>
-
-    <div class="story-actions">
-      <button class="action-btn">▶ &nbsp; Begin the Story</button>
-      <button class="action-btn">🔊 &nbsp; Listen Aloud</button>
-      <button class="action-btn">⚔ &nbsp; Play Interactive</button>
-    </div>
-  </div>
-</div>
-
-<script>
-const folklores = [
-  {
-    id: 1, icon: "🐉", title: "Vishap the Dragon",
-    tag: "Myth", period: "Ancient", origin: "Pre-Christian Armenia",
-    desc: "Vishap is a fearsome dragon from Armenian mythology — a serpentine creature lurking in rivers and lakes, stealing sunlight and devouring livestock. Heroes must outsmart or slay the beast to restore harmony to the land. Stone dragon stelae known as Vishapakars still stand in Armenia today, silent witnesses to this ancient cult."
-  },
-  {
-    id: 2, icon: "🌋", title: "Ara the Beautiful",
-    tag: "Legend", period: "Pre-Christian", origin: "Historical Armenia",
-    desc: "Ara the Beautiful was an Armenian king so handsome that Queen Semiramis of Assyria went to war just to capture him alive. When he died in battle, she prayed to the gods to resurrect him — commanding her sacred dogs (aralez) to lick his wounds. A tale of obsession, war, and the cruelty of desire."
-  },
-  {
-    id: 3, icon: "🦅", title: "Hayk the Giant",
-    tag: "Origin Myth", period: "Legendary antiquity", origin: "Armenian highlands",
-    desc: "Hayk was the legendary patriarch of the Armenian people — a towering giant and master archer descended from Noah. He defied the Babylonian tyrant Bel and led his clan north to found the Armenian homeland. With a single mighty arrow he slew Bel himself, and his descendants gave the land its ancient name: Hayastan."
-  },
-  {
-    id: 4, icon: "🌙", title: "Anahit the Goddess",
-    tag: "Deity", period: "Pre-Christian", origin: "Temple of Artashat",
-    desc: "Anahit was the radiant golden mother goddess of Armenia — protector of the nation, patron of fertility, wisdom, and water. Her grand temple blazed with gold at Artashat, and pilgrims traveled from afar to honor her. When Christianity arrived, her image was smashed — but she never truly disappeared from Armenian memory."
-  },
-  {
-    id: 5, icon: "🔥", title: "Վիշապ Վահագն",
-    tag: "Deity", period: "Ancient", origin: "Oral tradition",
-    desc: "Born from fire, sea, and a burning red reed — Vahagn, god of thunder and heroic courage, emerged into the world fully grown and battle-ready. He hunted dragons across the sky and stole fire from the heavens. His birth hymn is one of the oldest surviving fragments of Armenian poetry, preserved across thousands of years."
-  },
-  {
-    id: 6, icon: "🪄", title: "The Magic Pomegranate",
-    tag: "Fairy Tale", period: "Folk era", origin: "Rural Armenia",
-    desc: "A poor farmer discovers a pomegranate tree whose fruit grants wishes. For a time, the village prospers — but when greed takes root in his neighbors' hearts, the tree begins to wither. Only by returning to acts of generosity does the magic bloom again. A timeless tale of gratitude, community, and the cost of envy."
-  },
-  {
-    id: 7, icon: "🐺", title: "The Wolf and the Fox",
-    tag: "Fable", period: "Folk era", origin: "Armenian villages",
-    desc: "A proud and boastful wolf believes his strength makes him untouchable. But a small, sharp-witted fox outwits him at every turn — through cleverness, patience, and a quick tongue. Beloved across generations, this Armenian fable teaches that wisdom and kindness will always outlast arrogance and brute force."
-  },
-  {
-    id: 8, icon: "👁️", title: "The Evil Eye",
-    tag: "Folk Belief", period: "Living tradition", origin: "Across Armenia",
-    desc: "The evil eye — Atchk — is one of Armenia's oldest and most living folk beliefs. An envious glance can bring sickness, misfortune, or ruin. Blue glass beads, sacred prayers, and salt rituals ward it off. Mothers still pin charms to their children's clothing. Ancient belief, woven invisibly into everyday modern life."
-  },
-  {
-    id: 9, icon: "🌿", title: "The Weeping Willow",
-    tag: "Nature Tale", period: "Folk era", origin: "Ararat valley",
-    desc: "A young woman wept so endlessly for her lost love that her tears fell upon a sapling day after day. The tree grew tall around her grief, its branches drooping eternally downward — forever mirroring the weight of her sorrow. And so the weeping willow came to be, a tree that remembers love's longest mourning."
-  },
-  {
-    id: 10, icon: "⚔️", title: "David of Sassoun",
-    tag: "National Epic", period: "Medieval oral tradition", origin: "Sassoun region",
-    desc: "David of Sassoun is the thundering heart of Armenia's greatest national epic. A giant warrior who rides the magical horse Jalali, wields the enchanted sword Tsor-Tsor, and defeats foreign tyrants across four generations of heroes. His cry shakes mountains. His story has been sung by ashughs — bard-poets — for over a thousand years."
-  }
-];
-
-function enterRoom() {
-  switchScreen('entry-screen', 'room-screen');
-  const grid = document.getElementById('folklore-grid');
-  grid.innerHTML = folklores.map((f, i) => `
-    <div class="folklore-card" onclick="openStory(${f.id})" role="button" tabindex="0"
-      style="animation-delay: ${i * 0.06}s"
-      onkeydown="if(event.key==='Enter')openStory(${f.id})"
-      aria-label="Open ${f.title}">
-      <div class="card-number">${String(i+1).padStart(2,'0')}</div>
-      <span class="card-icon">${f.icon}</span>
-      <div class="card-title">${f.title}</div>
-      <div class="card-tag">${f.tag}</div>
-    </div>
-  `).join('');
-}
-
-function openStory(id) {
-  const f = folklores.find(x => x.id === id);
-  switchScreen('room-screen', 'story-screen');
-  document.getElementById('story-tag').textContent = f.tag;
-  document.getElementById('story-icon').textContent = f.icon;
-  document.getElementById('story-title').textContent = f.title;
-  document.getElementById('story-desc').textContent = f.desc;
-  document.getElementById('story-meta').innerHTML = `
-    <div class="story-meta-item">
-      <span class="story-meta-label">Category</span>
-      <span class="story-meta-value">${f.tag}</span>
-    </div>
-    <div class="story-meta-item">
-      <span class="story-meta-label">Period</span>
-      <span class="story-meta-value">${f.period}</span>
-    </div>
-    <div class="story-meta-item">
-      <span class="story-meta-label">Origin</span>
-      <span class="story-meta-value">${f.origin}</span>
-    </div>
-  `;
-  window.scrollTo(0, 0);
-}
-
-function goBack() {
-  switchScreen('story-screen', 'room-screen');
-  window.scrollTo(0, 0);
-}
-
-function switchScreen(fromId, toId) {
-  document.getElementById(fromId).classList.remove('active');
-  document.getElementById(toId).classList.add('active');
-}
-</script>
-</body>
-</html>
+-- 1. Basic patient directory with user contact information
+SELECT
+    p.patient_id,
+    u.name,
+    u.surname,
+    u.email,
+    u.phone_number,
+    p.gender,
+    EXTRACT(YEAR FROM age(CURRENT_DATE, p.birth_date)) AS age,
+    p.diagnosis,
+    p.registration_date
+FROM patients p
+JOIN users u
+    ON u.user_id = p.patient_id
+ORDER BY p.registration_date DESC, p.patient_id;
+
+
+-- 2. Active therapist directory
+SELECT
+    t.therapist_id,
+    u.name,
+    u.surname,
+    u.email,
+    t.specialization,
+    t.experience_years,
+    t.license_number
+FROM therapists t
+JOIN users u
+    ON u.user_id = t.therapist_id
+WHERE t.is_active = TRUE
+ORDER BY t.specialization, t.experience_years DESC;
+
+
+-- 3. Patients and their assigned therapists
+SELECT
+    p.patient_id,
+    pu.name || ' ' || pu.surname AS patient_name,
+    p.diagnosis,
+    t.therapist_id,
+    tu.name || ' ' || tu.surname AS therapist_name,
+    t.specialization
+FROM patient_therapist_map ptm
+JOIN patients p
+    ON p.patient_id = ptm.patient_id
+JOIN users pu
+    ON pu.user_id = p.patient_id
+JOIN therapists t
+    ON t.therapist_id = ptm.therapist_id
+JOIN users tu
+    ON tu.user_id = t.therapist_id
+ORDER BY patient_name;
+
+
+-- 4. Patient emergency contacts
+SELECT
+    p.patient_id,
+    pu.name || ' ' || pu.surname AS patient_name,
+    ec.name || ' ' || ec.surname AS contact_name,
+    ec.relation,
+    ec.phone_number,
+    ec.email
+FROM emergency_contacts ec
+JOIN patients p
+    ON p.patient_id = ec.patient_id
+JOIN users pu
+    ON pu.user_id = p.patient_id
+ORDER BY patient_name, ec.relation;
+
+
+-- 5. Appointment history with patient, therapist, and slot details
+SELECT
+    a.appointment_id,
+    a.scheduled_at,
+    a.status,
+    pu.name || ' ' || pu.surname AS patient_name,
+    tu.name || ' ' || tu.surname AS therapist_name,
+    ts.start_time,
+    ts.end_time
+FROM appointments a
+JOIN users pu
+    ON pu.user_id = a.patient_id
+JOIN users tu
+    ON tu.user_id = a.therapist_id
+LEFT JOIN time_slots ts
+    ON ts.slot_id = a.slot_id
+ORDER BY a.scheduled_at DESC;
+
+
+-- 6. Appointment counts by status
+SELECT
+    status,
+    COUNT(*) AS appointment_count,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS percentage_of_total
+FROM appointments
+GROUP BY status
+ORDER BY appointment_count DESC;
+
+
+-- 7. Monthly appointment volume
+SELECT
+    date_trunc('month', scheduled_at)::date AS appointment_month,
+    COUNT(*) AS total_appointments,
+    COUNT(*) FILTER (WHERE status = 'completed') AS completed_appointments,
+    COUNT(*) FILTER (WHERE status = 'cancelled') AS cancelled_appointments,
+    COUNT(*) FILTER (WHERE status = 'no_show') AS no_show_appointments
+FROM appointments
+GROUP BY date_trunc('month', scheduled_at)
+ORDER BY appointment_month;
+
+
+-- 8. Therapist workload and completion rate
+SELECT
+    t.therapist_id,
+    u.name || ' ' || u.surname AS therapist_name,
+    t.specialization,
+    COUNT(a.appointment_id) AS total_appointments,
+    COUNT(a.appointment_id) FILTER (WHERE a.status = 'completed') AS completed_appointments,
+    ROUND(
+        100.0 * COUNT(a.appointment_id) FILTER (WHERE a.status = 'completed')
+        / NULLIF(COUNT(a.appointment_id), 0),
+        2
+    ) AS completion_rate_percent
+FROM therapists t
+JOIN users u
+    ON u.user_id = t.therapist_id
+LEFT JOIN appointments a
+    ON a.therapist_id = t.therapist_id
+GROUP BY t.therapist_id, u.name, u.surname, t.specialization
+ORDER BY total_appointments DESC, completion_rate_percent DESC;
+
+
+-- 9. Average feedback rating by therapist
+SELECT
+    t.therapist_id,
+    u.name || ' ' || u.surname AS therapist_name,
+    t.specialization,
+    COUNT(f.feedback_id) AS feedback_count,
+    ROUND(AVG(f.rating), 2) AS average_rating
+FROM therapists t
+JOIN users u
+    ON u.user_id = t.therapist_id
+LEFT JOIN feedbacks f
+    ON f.therapist_id = t.therapist_id
+GROUP BY t.therapist_id, u.name, u.surname, t.specialization
+HAVING COUNT(f.feedback_id) > 0
+ORDER BY average_rating DESC, feedback_count DESC;
+
+
+-- 10. Recent low-rating feedback that may need follow-up
+SELECT
+    f.feedback_id,
+    f.entry_date,
+    f.rating,
+    pu.name || ' ' || pu.surname AS patient_name,
+    tu.name || ' ' || tu.surname AS therapist_name,
+    f.comment
+FROM feedbacks f
+JOIN users pu
+    ON pu.user_id = f.patient_id
+JOIN users tu
+    ON tu.user_id = f.therapist_id
+WHERE f.rating <= 2
+ORDER BY f.entry_date DESC, f.rating;
+
+
+-- 11. Patients with high average stress or anxiety in daily records
+SELECT
+    p.patient_id,
+    u.name || ' ' || u.surname AS patient_name,
+    ROUND(AVG(dr.stress_level), 2) AS avg_stress,
+    ROUND(AVG(dr.anxiety_level), 2) AS avg_anxiety,
+    ROUND(AVG(dr.mood_level), 2) AS avg_mood,
+    COUNT(dr.record_id) AS record_count
+FROM daily_records dr
+JOIN patients p
+    ON p.patient_id = dr.patient_id
+JOIN users u
+    ON u.user_id = p.patient_id
+GROUP BY p.patient_id, u.name, u.surname
+HAVING AVG(dr.stress_level) >= 7
+    OR AVG(dr.anxiety_level) >= 7
+ORDER BY GREATEST(AVG(dr.stress_level), AVG(dr.anxiety_level)) DESC;
+
+
+-- 12. Daily mood trend for one patient
+WITH params AS (
+    SELECT 1 AS selected_patient_id
+)
+SELECT
+    dr.entry_date,
+    dr.energy_level,
+    dr.anxiety_level,
+    dr.stress_level,
+    dr.mood_level
+FROM daily_records dr
+JOIN params p
+    ON p.selected_patient_id = dr.patient_id
+ORDER BY dr.entry_date;
+
+
+-- 13. Active prescriptions with patient and therapist names
+SELECT
+    pr.prescription_id,
+    pu.name || ' ' || pu.surname AS patient_name,
+    tu.name || ' ' || tu.surname AS therapist_name,
+    pr.medication,
+    pr.dosage,
+    pr.frequency,
+    pr.start_date,
+    pr.end_date,
+    pr.status
+FROM prescriptions pr
+JOIN users pu
+    ON pu.user_id = pr.patient_id
+JOIN users tu
+    ON tu.user_id = pr.therapist_id
+WHERE pr.status = 'Active'
+ORDER BY pr.end_date NULLS LAST, patient_name;
+
+
+-- 14. Prescriptions ending within the next 30 days
+SELECT
+    pr.prescription_id,
+    pu.name || ' ' || pu.surname AS patient_name,
+    pr.medication,
+    pr.end_date,
+    pr.status
+FROM prescriptions pr
+JOIN users pu
+    ON pu.user_id = pr.patient_id
+WHERE pr.end_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '30 days'
+ORDER BY pr.end_date;
+
+
+-- 15. Support group membership counts
+SELECT
+    sg.group_id,
+    sg.group_name,
+    sg.topic,
+    COUNT(gm.membership_id) AS member_count
+FROM support_groups sg
+LEFT JOIN group_membership gm
+    ON gm.group_id = sg.group_id
+GROUP BY sg.group_id, sg.group_name, sg.topic
+ORDER BY member_count DESC, sg.group_name;
+
+
+-- 16. Support groups joined by each patient
+SELECT
+    p.patient_id,
+    u.name || ' ' || u.surname AS patient_name,
+    sg.group_name,
+    sg.topic,
+    gm.joined_date
+FROM group_membership gm
+JOIN patients p
+    ON p.patient_id = gm.patient_id
+JOIN users u
+    ON u.user_id = p.patient_id
+JOIN support_groups sg
+    ON sg.group_id = gm.group_id
+ORDER BY patient_name, gm.joined_date DESC;
+
+
+-- 17. Resource catalog with reference counts
+SELECT
+    r.resource_id,
+    r.title,
+    r.description,
+    r.upload_date,
+    COUNT(rr.reference_id) AS reference_count
+FROM resources r
+LEFT JOIN resource_references rr
+    ON rr.resource_id = r.resource_id
+GROUP BY r.resource_id, r.title, r.description, r.upload_date
+ORDER BY r.upload_date DESC;
+
+
+-- 18. Therapist weekly schedules
+SELECT
+    t.therapist_id,
+    u.name || ' ' || u.surname AS therapist_name,
+    ts.weekday,
+    ts.shift_type
+FROM therapists_schedules ts
+JOIN therapists t
+    ON t.therapist_id = ts.therapist_id
+JOIN users u
+    ON u.user_id = t.therapist_id
+ORDER BY therapist_name, ts.weekday, ts.shift_type;
+
+
+-- 19. Therapist schedule overrides
+SELECT
+    tso.override_id,
+    tso.date,
+    u.name || ' ' || u.surname AS therapist_name,
+    tso.override_type,
+    tso.is_available,
+    COUNT(tsofs.freeslot_id) AS override_free_slots
+FROM therapists_schedules_overrides tso
+JOIN users u
+    ON u.user_id = tso.therapist_id
+LEFT JOIN therapists_schedules_overrides_free_slots tsofs
+    ON tsofs.override_id = tso.override_id
+GROUP BY tso.override_id, tso.date, u.name, u.surname, tso.override_type, tso.is_available
+ORDER BY tso.date DESC, therapist_name;
+
+
+-- 20. Available therapist slots for a specific date
+WITH params AS (
+    SELECT DATE '2026-05-01' AS target_date
+),
+target_day AS (
+    SELECT
+        p.target_date,
+        trim(to_char(p.target_date, 'Day')) AS weekday_name
+    FROM params p
+),
+scheduled_slots AS (
+    SELECT
+        t.therapist_id,
+        u.name || ' ' || u.surname AS therapist_name,
+        td.target_date,
+        sl.slot_id,
+        sl.start_time,
+        sl.end_time
+    FROM target_day td
+    JOIN therapists_schedules sch
+        ON lower(sch.weekday) = lower(td.weekday_name)
+    JOIN therapists t
+        ON t.therapist_id = sch.therapist_id
+        AND t.is_active = TRUE
+    JOIN users u
+        ON u.user_id = t.therapist_id
+    JOIN time_slots sl
+        ON sl.shift_type = sch.shift_type
+)
+SELECT
+    ss.therapist_id,
+    ss.therapist_name,
+    ss.target_date,
+    ss.slot_id,
+    ss.start_time,
+    ss.end_time
+FROM scheduled_slots ss
+LEFT JOIN therapists_schedules_overrides tso
+    ON tso.therapist_id = ss.therapist_id
+    AND tso.date = ss.target_date
+LEFT JOIN therapists_schedules_overrides_free_slots tsofs
+    ON tsofs.override_id = tso.override_id
+    AND tsofs.slot_id = ss.slot_id
+LEFT JOIN appointments a
+    ON a.therapist_id = ss.therapist_id
+    AND a.slot_id = ss.slot_id
+    AND a.scheduled_at::date = ss.target_date
+WHERE COALESCE(tso.is_available, TRUE) = TRUE
+    AND (
+        tso.override_id IS NULL
+        OR tso.is_available = FALSE
+        OR NOT EXISTS (
+            SELECT 1
+            FROM therapists_schedules_overrides_free_slots fs
+            WHERE fs.override_id = tso.override_id
+        )
+        OR tsofs.freeslot_id IS NOT NULL
+    )
+    AND a.appointment_id IS NULL
+ORDER BY ss.therapist_name, ss.start_time;
+
+
+-- 21. New patients by month
+SELECT
+    date_trunc('month', registration_date)::date AS registration_month,
+    COUNT(*) AS new_patient_count
+FROM patients
+GROUP BY date_trunc('month', registration_date)
+ORDER BY registration_month;
+
+
+-- 22. Diagnosis distribution
+SELECT
+    diagnosis,
+    COUNT(*) AS patient_count,
+    ROUND(100.0 * COUNT(*) / SUM(COUNT(*)) OVER (), 2) AS percentage_of_patients
+FROM patients
+GROUP BY diagnosis
+ORDER BY patient_count DESC, diagnosis;
+
+
+-- 23. Report table compared with appointment facts
+WITH appointment_months AS (
+    SELECT
+        trim(to_char(scheduled_at, 'Month')) AS month_name,
+        COUNT(*) AS calculated_total_appointments
+    FROM appointments
+    GROUP BY trim(to_char(scheduled_at, 'Month'))
+),
+feedback_months AS (
+    SELECT
+        trim(to_char(entry_date, 'Month')) AS month_name,
+        ROUND(AVG(rating), 2) AS calculated_avg_rating
+    FROM feedbacks
+    GROUP BY trim(to_char(entry_date, 'Month'))
+)
+SELECT
+    r.report_id,
+    r.month,
+    r.written_date,
+    r.total_appointments AS reported_total_appointments,
+    COALESCE(am.calculated_total_appointments, 0) AS calculated_total_appointments,
+    r.avg_rating AS reported_avg_rating,
+    fm.calculated_avg_rating,
+    r.new_patients AS reported_new_patients
+FROM report r
+LEFT JOIN appointment_months am
+    ON am.month_name ILIKE r.month || '%'
+LEFT JOIN feedback_months fm
+    ON fm.month_name ILIKE r.month || '%'
+ORDER BY r.written_date DESC;
+
+
