@@ -111,13 +111,16 @@
 
   .entry-title {
     font-family: 'Cinzel', serif;
-    font-size: clamp(42px, 8vw, 72px);
+    font-size: clamp(28px, 8vw, 72px);
     font-weight: 600;
     color: var(--parchment);
-    line-height: 1.05;
+    line-height: 1.1;
     margin-bottom: 0.4rem;
     opacity: 0;
     animation: fadeUp 0.8s 0.4s ease forwards;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
   }
 
   .entry-title span {
@@ -125,6 +128,8 @@
     display: block;
     font-weight: 400;
     font-style: italic;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .entry-divider {
@@ -415,11 +420,14 @@
 
   .story-title {
     font-family: 'Cinzel', serif;
-    font-size: clamp(28px, 5vw, 48px);
+    font-size: clamp(22px, 5vw, 48px);
     font-weight: 600;
     color: var(--parchment);
-    line-height: 1.15;
+    line-height: 1.2;
     margin-bottom: 2.5rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
   }
 
   /* IMAGE PLACEHOLDER */
@@ -570,9 +578,12 @@
 
   .player-title {
     font-family: 'Cinzel', serif;
-    font-size: clamp(24px, 4vw, 40px);
+    font-size: clamp(20px, 4vw, 40px);
     color: var(--parchment);
     margin-bottom: 1.5rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
   }
 
   .player-stage {
@@ -674,13 +685,39 @@
 
   /* ─── RESPONSIVE ─── */
   @media (max-width: 600px) {
+    #entry-screen { padding: 1rem; }
+    .entry-content { max-width: 100%; }
+    .entry-desc { font-size: 15px; line-height: 1.6; margin-bottom: 2rem; }
+    .entry-divider { width: min(220px, 80%); margin: 1.4rem auto; }
+    .enter-btn { padding: 14px 32px; font-size: 12px; letter-spacing: 2px; }
+    .entry-desc br { display: none; }
+    .entry-border { inset: 12px; }
+    .corner { width: 28px; height: 28px; }
+
+    .room-header { padding: 1rem 1.2rem; gap: 0.6rem; flex-wrap: wrap; }
+    .room-header-title { font-size: 12px; letter-spacing: 2px; }
+    .room-header-sub { font-size: 11px; }
     .folklore-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     .room-body { padding: 2rem 1rem 3rem; }
+    .room-intro h2 { font-size: 22px; }
+
+    .story-header { padding: 1rem 1rem; }
+    .story-header-title { font-size: 11px; letter-spacing: 1.5px; }
     .story-body { padding: 2.5rem 1rem 3rem; }
+    .story-text-block { padding: 1.2rem 1rem; }
+    .story-text { font-size: 16px; }
     .story-actions { flex-direction: column; }
+    .action-btn { padding: 12px 20px; font-size: 10px; letter-spacing: 2px; }
+
     .player-body { padding: 2rem 1rem 3rem; }
     .player-actions { flex-direction: column; }
     .interactive-actions { flex-direction: column; }
+  }
+
+  @media (max-width: 360px) {
+    .entry-title { font-size: clamp(22px, 9vw, 40px); }
+    .entry-eyebrow { font-size: 10px; letter-spacing: 2px; }
+    .room-header-sub { display: none; }
   }
 </style>
 </head>
